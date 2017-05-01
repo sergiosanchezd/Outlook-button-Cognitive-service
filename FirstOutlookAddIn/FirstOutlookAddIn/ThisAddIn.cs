@@ -8,52 +8,19 @@ using Office = Microsoft.Office.Core;
 using System.Windows;
 using System.Windows.Forms;
 using Microsoft.ProjectOxford.Text.Sentiment;
+using System.Drawing;
 
 namespace FirstOutlookAddIn
 {
     public partial class ThisAddIn
     {
-        Office.CommandBar newToolBar;
-        Office.CommandBarButton firstButton;
-        Outlook.Explorers selectExplorers;
+        Outlook.Explorer currentExplorer = null;
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            selectExplorers = this.Application.Explorers;
-            selectExplorers.NewExplorer += new Outlook.ExplorersEvents_NewExplorerEventHandler(newExplorer_Event);
-            AddToolbar();
+            currentExplorer = this.Application.ActiveExplorer();
+            currentExplorer.SelectionChange += new Outlook.ExplorerEvents_10_SelectionChangeEventHandler(CurrentExplorer_Event);
         }
-        private void newExplorer_Event(Outlook.Explorer new_Explorer)
-        {
-            ((Outlook._Explorer)new_Explorer).Activate();
-            newToolBar = null;
-            AddToolbar();
-        }
-
-        private void AddToolbar()
-        {
-            if (newToolBar == null)
-            {
-                Office.CommandBars cmdBars = this.Application.ActiveExplorer().CommandBars;
-                newToolBar = cmdBars.Add("Analyze text", Office.MsoBarPosition.msoBarTop, false, true);
-            }
-            try
-            {
-                Office.CommandBarButton button_1 = (Office.CommandBarButton)newToolBar.Controls.Add(1, missing, missing, missing, missing);
-                button_1.Tag = "Button1";
-                button_1.Caption = "Analyze text";
-                button_1.Style = Office.MsoButtonStyle.msoButtonCaption;
-                newToolBar.Visible = true;
-                if (this.firstButton == null)
-                {
-                    this.firstButton = button_1;
-                    firstButton.Click += new Office._CommandBarButtonEvents_ClickEventHandler(ButtonClick);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        } private void ButtonClick(Office.CommandBarButton ctrl, ref bool cancel)
+        private void CurrentExplorer_Event()
         {
             if (this.Application.ActiveExplorer().Selection.Count > 0)
             {
@@ -61,30 +28,46 @@ namespace FirstOutlookAddIn
                 if (selObject is Outlook.MailItem)
                 {
                     Outlook.MailItem mailItem = (selObject as Outlook.MailItem);
-                    MainAsync(mailItem.Body);
+                    var prop = mailItem.UserProperties.Find("Analyze", true);
+                    if (prop == null)
+                    {
+                        prop = mailItem.UserProperties.Add("Analyze", Outlook.OlUserPropertyType.olText);
+                    }
+                    if (string.IsNullOrEmpty(prop.Value))
+                    {
+                        prop.Value = GetSentiment(mailItem.Body);
+                    }
+                    mailItem.Save();
                 }
             }
         }
-        static void MainAsync(string text)
+        private static string GetSentiment(string text)
         {
-            double score = 0;
-            var apiKey = "Tu api key del servicio de azure va aqui";
-            var document = new SentimentDocument()
+            try
             {
-                Id = "OutlookSergio",
-                Text = text,
-                Language = "es"
-            };
-            var request = new SentimentRequest();
-            request.Documents.Add(document);
-            var client = new SentimentClient(apiKey);
-            var response = client.GetSentiment(request);
-            foreach (var doc in response.Documents)
-            {
-                score += doc.Score;
+                double score = 0;
+                var apiKey = "Tu api key de azure cognitive service text"";
+                var document = new SentimentDocument()
+                {
+                    Id = "OutlookSergio",
+                    Text = text,
+                    Language = "es"
+                };
+                var request = new SentimentRequest();
+                request.Documents.Add(document);
+                var client = new SentimentClient(apiKey);
+                var response = client.GetSentiment(request);
+                foreach (var doc in response.Documents)
+                {
+                    score += doc.Score;
+                }
+                score = Math.Round((score / response.Documents.Count), 2) * 100;
+                return score + "%";
             }
-            score = Math.Round((score / response.Documents.Count), 2) * 100;
-            MessageBox.Show("Score: " + score + "%");
+            catch(Exception e)
+            {
+                return null;
+            }
         }
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {

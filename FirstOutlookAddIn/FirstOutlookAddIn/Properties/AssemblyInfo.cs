@@ -8,10 +8,10 @@ using System.Security;
 // asociada con un ensamblado.
 [assembly: AssemblyTitle("FirstOutlookAddIn")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sergio")]
+[assembly: AssemblyConfiguration("Sergio Sanchez")]
+[assembly: AssemblyCompany("Sergio Sanchez")]
 [assembly: AssemblyProduct("FirstOutlookAddIn")]
-[assembly: AssemblyCopyright("Copyright ©  2017 Sergio")]
+[assembly: AssemblyCopyright("Copyright © Sergio 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
