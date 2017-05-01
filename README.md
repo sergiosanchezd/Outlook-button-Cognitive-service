@@ -1,15 +1,13 @@
 # Outlook-button-Cognitive-service
-Creación de un botón para outlook que manda el cuerpo de un correo electrónico a "Azure cognitive service text" y analiza el sentimiento 
-del correo entre 0% (muy negativo) y 100% (muy positivo).
+Creación de una acción cuando se selecciona un correo que incluye en la columna "Analyze" el porcentaje del sentimiento entre 0% (muy negativo) y 100% (muy positivo) sacado de "Azure cognitive service text".
 
 REQUISTOS:
 - Tener creado en Microsoft Azure un servicio Cognitive Service del tipo comprensor de Texto.
+- Crear en outlook una columna que se llame "Analyze" y de tipo texto. Añadir a la vista o vistas que quieras verlo.
 
 PROYECTO
-Es un proyecto de tipo "Add-in para Outlook". Este proyecto crea un botón en tu cliente outlook para analizar el cuerpo del correo 
-electrónico que se tiene seleccionado. Por tanto, el proyecto tiene 2 acciones:
-1. Creación de un botón en la ribbon
-2. La acción del botón:
-    1. Recoger el cuerpo del correo seleccionado
-    2. Enviar el cuerpo al servicio de Azure
-    3. Mostrar en porcentaje el sentimiento del correo electrónico, siendo 0 % un correo muy malo y 100 % un correo genial.
+Es un proyecto de tipo "Add-in para Outlook". Este proyecto crea una acción cuando seleccionas un correo que lo analiza y mete el resultado en la columna "Analyze".
+
+Por tanto, lo mejor es que incluyas en todas las vistas primero una columna que se llame "Analyze" de tipo texto y que puedas ver los resultados.
+
+Además, debes cambiar en Addin.cs el API Key de tu servicio de azure que analiza el texto.
