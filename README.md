@@ -5,7 +5,7 @@ REQUISTOS:
 - Tener creado en Microsoft Azure un servicio Cognitive Service del tipo comprensor de Texto.
 - Crear en outlook una columna que se llame "Analyze" y de tipo texto. Añadir a la vista o vistas que quieras verlo.
 
-PROYECTO
+PROYECTO:
 Es un proyecto de tipo "Add-in para Outlook". Este proyecto crea una acción cuando seleccionas un correo que lo analiza y mete el resultado en la columna "Analyze".
 
 Por tanto, lo mejor es que incluyas en todas las vistas primero una columna que se llame "Analyze" de tipo texto y que puedas ver los resultados.
